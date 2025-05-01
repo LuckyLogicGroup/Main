@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lucky Logic - Games</title>
+    <style>
+        body { background-color: #222; color: white; font-family: Arial; }
+        nav { background-color: #333; padding: 10px; text-align: center; }
+        nav a { color: white; margin: 0 20px; text-decoration: none; }
+        nav a:hover { text-decoration: underline; }
+
+        .content { text-align: center; margin-top: 40px; }
+        .button {
+            background-color: green;
+            color: white;
+            padding: 12px 24px;
+            margin: 15px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: darkgreen;
+        }
+        .logo { width: 100px; margin: 20px auto; display: block; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="{{ url_for('homepage') }}">Home</a>
+        <a href="{{ url_for('games') }}">Games</a>
+        <a href="{{ url_for('financial') }}">Financial Checker</a>
+        <a href="{{ url_for('history') }}">History</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+
+    <div class="content">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Lucky Logic Logo">
+        <h1>Games Hub</h1>
+
+        <a href="{{ url_for('play_game') }}">
+            <button class="button">Play Card Game</button>
+        </a>
+
+        <a href="{{ url_for('download_results') }}">
+            <button class="button">View Game Results (CSV)</button>
+        </a>
+    </div>
+
+</body>
+</html>

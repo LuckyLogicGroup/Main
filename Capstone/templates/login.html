@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ role }} Login</title>
+    <style>
+        body { background-color: #222; color: white; text-align: center; font-family: Arial, sans-serif; }
+        .logo { width: 150px; margin-top: 20px; }
+        .login-box { background-color: #444; padding: 20px; border-radius: 10px; width: 300px; margin: auto; margin-top: 50px; }
+        input { margin: 10px; padding: 8px; width: 80%; }
+        button { background-color: green; color: white; padding: 10px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Lucky Logic Logo" class="logo">
+    <h1>{{ role }} Login</h1>
+    <div class="login-box">
+        <form action="{{ url_for('auth', role=role) }}" method="POST">
+            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="password" name="password" placeholder="Password" required><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
