@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Lucky Logic – History{% endblock %}
+
+{% block content %}
+<h1>📝 Game History</h1>
+
+{% if rows %}
+<table>
+  <thead>
+    <tr>
+      {% if is_admin %}<th>User</th>{% endif %}
+      <th>Bet Type</th><th>Bet Value</th><th>Amount</th>
+      <th>Result</th><th>Net Gain</th><th>Balance After</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      {% if is_admin %}<td>{{ r[0] }}</td>{% endif %}
+      <td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
+      <td>{{ r[4] }}</td><td>{{ r[5] }}</td><td>{{ r[6] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No spins recorded yet.</p>
+{% endif %}
+
+{% if show_card_link %}
+  <a class="btn" href="{{ url_for('download_results') }}">📄 Download Card-Game CSV</a>
+{% endif %}
+{% endblock %}

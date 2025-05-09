@@ -1,0 +1,58 @@
+/* fade page in when it loads */
+@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+body { animation:fadeIn .6s ease-in }
+
+
+/* ----  GLOBAL  ---- */
+body      { background:#1e1e1e; color:#eee; font-family:Arial,Helvetica,sans-serif; margin:0 }
+a,button  { cursor:pointer; text-decoration:none }
+h1,h2,h3  { margin:20px 0; font-weight:600 }
+
+/* ----  NAV BAR  ---- */
+nav        { background:#333; display:flex; justify-content:center; gap:60px; padding:8px 0; }
+nav a      { color:#eee; }
+nav a:hover{ text-decoration:underline; }
+
+/* ----  CONTENT WRAPPER  ---- */
+.main      { text-align:center; padding:40px 0; }
+
+/* ----  LOGO  ---- */
+.logo {
+  width:450px;          /* 10 × larger */
+  max-width:90%;        /* shrink gracefully on small screens */
+  margin:0 auto 20px;
+  display:block;
+}
+
+
+/* ----  GREEN BUTTON  ---- */
+.btn       { background:#11a018; padding:10px 26px; border:none; border-radius:6px;
+             color:#fff; font-size:16px; margin:8px; display:inline-block; }
+.btn:hover{
+  background:#0c7f12;
+  box-shadow:0 0 8px 2px #11ff3c;          /* neon edge */
+  transition:box-shadow .25s, background .25s;
+}
+
+
+/* ----  FORM ELEMENTS  ---- */
+form select, form input[type=number]{
+  padding:8px; border-radius:6px; border:none; width:200px; margin-bottom:12px;
+}
+
+/* ----  TABLE  ---- */
+table      { width:90%; max-width:900px; margin:30px auto; border-collapse:collapse; }
+th,td      { padding:12px; border-bottom:1px solid #444; }
+th         { background:#444; }
+
+.wheel{
+  width:280px;          /* same as before, edit if you want bigger */
+  max-width:90%;
+  margin:20px auto;
+  display:block;
+}
+
+
+
+/* ----  FOOTER NAV  ---- */
+.footer-nav{position:fixed;bottom:15px;width:100%;text-align:center}

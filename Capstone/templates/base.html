@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Lucky Logic{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="{{ url_for('history') }}">History</a>
+    <a href="{{ url_for('games')   }}">Games</a>
+    <a href="{{ url_for('logout')  }}">Logout</a>
+  </nav>
+
+  <!-- MAIN PAGE AREA (single block!) -->
+  <main class="main">
+      {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER BUTTONS -->
+  <footer class="footer-nav">
+      {% block footer %}
+         <a class="btn" href="{{ url_for('homepage') }}">🏠 Homepage</a>
+      {% endblock %}
+  </footer>
+
+</body>
+</html>

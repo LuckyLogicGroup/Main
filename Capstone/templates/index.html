@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Logic • Welcome</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <style>
+    /* big animated logo */
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    .logo { width:450px; max-width:90%; margin:40px auto 30px; display:block; animation:pulse 4s ease-in-out infinite; }
+
+    /* center the whole welcome section */
+    .centerbox{
+      display:flex; flex-direction:column;
+      align-items:center;                /* horizontal center */
+      justify-content:center;            /* vertical center */
+    }
+    h1{ margin-bottom:30px; }
+
+    /* green buttons */
+    .btn{
+      background:#11a018; color:#fff; padding:12px 28px;
+      border:none; border-radius:6px; font-size:18px;
+      margin:12px; cursor:pointer; transition:background .25s;
+    }
+    .btn:hover{ background:#0c7f12 }
+  </style>
+</head>
+<body>
+
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="Lucky Logic Logo" class="logo">
+
+  <!-- everything centered inside this flex box -->
+  <div class="centerbox">
+      <h1>Welcome to Lucky&nbsp;Logic</h1>
+
+      <div>
+        <a href="{{ url_for('login', role='user')  }}"  class="btn">Login&nbsp;as&nbsp;User</a>
+        <a href="{{ url_for('login', role='admin') }}"  class="btn">Login&nbsp;as&nbsp;Admin</a>
+      </div>
+  </div>
+
+</body>
+</html>

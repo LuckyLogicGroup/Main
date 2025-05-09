@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ role }} Login • Lucky Logic</title>
+
+  <!-- reuse global colours / fonts -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <style>
+    h1{ text-align:center; margin-bottom:25px; }
+    /* --------  page-specific tweaks  -------- */
+    @keyframes pulse {       /* subtle breathing logo */
+      0%,100%{transform:scale(1)}
+      50%   {transform:scale(1.06)}
+    }
+    .logo{
+      width:450px;           /* 10× bigger */
+      max-width:90%;         /* responsive on small screens */
+      margin:40px auto 20px;
+      display:block;
+      animation:pulse 4s ease-in-out infinite;
+    }
+    .login-box{
+      background:#444;
+      width:340px;
+      margin:20px auto 60px;
+      padding:28px 24px;
+      border-radius:12px;
+      box-shadow:0 0 12px rgba(0,0,0,.4);
+    }
+    .login-box input{
+      width:92%;
+      padding:11px 10px;
+      margin:10px 0;
+      border:none;
+      border-radius:6px;
+      font-size:15px;
+    }
+    .login-box button{
+      width:100%;
+      padding:12px 0;
+      border:none;
+      border-radius:6px;
+      background:#11a018;
+      color:#fff;
+      font-size:17px;
+      cursor:pointer;
+      transition:background .25s;
+    }
+    .login-box button:hover{ background:#0c7f12 }
+  </style>
+</head>
+<body>
+
+  <!-- large animated logo -->
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="Lucky Logic Logo" class="logo">
+
+  <h1>{{ role }} Login</h1>
+
+  <div class="login-box">
+    <form action="{{ url_for('auth', role=role) }}" method="POST">
+      <input  type="text"     name="username" placeholder="Username" required>
+      <input  type="password" name="password" placeholder="Password" required>
+      <button type="submit">Log In</button>
+    </form>
+  </div>
+
+</body>
+</html>

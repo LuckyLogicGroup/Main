@@ -1,0 +1,139 @@
+import os, csv, subprocess
+from flask import Flask, render_template, request, redirect, url_for, session, send_file
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from Games.roulette.roulette import spin_roulette          # ← lowercase import
+
+app = Flask(__name__)
+app.secret_key = "slys123"
+
+# ----------------  DATABASE  -----------------
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(basedir,'instance','database.db')}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id       = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80),  unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    role     = db.Column(db.String(10),  nullable=False)          # User / Admin
+
+# ----------------  AUTH / LOGIN  -------------
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/login/<role>')
+def login(role):
+    return render_template('login.html', role=role.capitalize())
+
+@app.route('/auth/<role>', methods=['POST'])
+def auth(role):
+    u = request.form['username']; p = request.form['password']
+    user = User.query.filter_by(username=u, role=role.capitalize()).first()
+    if user and check_password_hash(user.password, p):
+        session.update(username=user.username, role=user.role, balance=100)
+        return redirect(url_for('homepage'))
+    return "Invalid credentials", 401
+
+# ----------------  PAGES  --------------------
+@app.route('/homepage')
+def homepage():
+    if 'username' not in session: return redirect(url_for('index'))
+    return render_template('homepage.html', username=session['username'])
+
+@app.route('/games')
+def games():
+    if 'username' not in session: return redirect(url_for('index'))
+    return render_template('games.html')
+
+@app.route('/games/play')
+def play_game():
+    path = os.path.join('Games','card_game','main.py')
+    if os.name=='nt':
+        subprocess.Popen(['start','cmd','/c','python',path], shell=True)
+    else:
+        subprocess.Popen(['x-terminal-emulator','-e',f'python3 {path}'], shell=True)
+    return redirect(url_for('games'))
+
+@app.route('/games/results')
+def download_results():
+    csv_path = os.path.join('Games','card_game','probability_challenge_results.csv')
+    return send_file(csv_path, as_attachment=True) if os.path.exists(csv_path) else "No CSV yet."
+
+# -----------  GIVE EXTRA COINS  --------------
+@app.route('/get_more_coins')
+def get_more_coins():
+    if 'username' not in session: return redirect(url_for('index'))
+    session['balance'] += 100
+    return redirect(url_for('roulette'))
+
+# ---------------  ROULETTE  ------------------
+@app.route('/roulette', methods=['GET','POST'])
+def roulette():
+    if 'username' not in session: return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        bt = request.form['bet_type']
+        bv = request.form['bet_value']
+        ba = int(request.form['bet_amount'])
+        if ba > session['balance']: return "Not enough coins!", 400
+
+        win, num, col, payout, new_bal = spin_roulette(
+            bt, bv, ba, session['balance'], session['username']   # pass username!
+        )
+        session['balance'] = new_bal
+        return redirect(url_for('roulette'))
+
+    return render_template('roulette.html', balance=session.get('balance',100))
+
+# ---------------  HISTORY  -------------------
+@app.route('/history')
+def history():
+    if 'username' not in session: return redirect(url_for('index'))
+
+    path  = os.path.join('Games','roulette','roulette_results.csv')
+    rows  = []
+    if os.path.exists(path):
+        with open(path) as f:
+            rdr = csv.reader(f); next(rdr, None)
+            for r in rdr:
+                if session['role']=='Admin' or r[0]==session['username']:
+                    rows.append(r)
+
+    card_csv = os.path.join('Games','card_game','probability_challenge_results.csv')
+    return render_template('history.html',
+                rows=rows,
+                is_admin=(session['role']=='Admin'),
+                show_card_link=os.path.exists(card_csv))
+
+# ---------------  LOGOUT ---------------------
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+# ---------------  INIT DB  -------------------
+def create_default_users():
+    defaults = [
+        ("alex1",     "alex234",   "User"),
+        ("basicuser", "pass212",   "User"),
+        ("theadmin",  "admin2345", "Admin"),
+        ("basicadmin","adminpass", "Admin"),
+    ]
+    for u,p,r in defaults:
+        if not User.query.filter_by(username=u).first():
+            db.session.add(User(username=u,
+                                password=generate_password_hash(p), role=r))
+    db.session.commit()
+
+@app.cli.command('initdb')
+def initdb():
+    db.create_all(); create_default_users(); print("DB initialised")
+
+# ---------------  MAIN  ----------------------
+if __name__ == "__main__":
+    os.makedirs('instance', exist_ok=True)
+    with app.app_context(): db.create_all(); create_default_users()
+    app.run(debug=True)

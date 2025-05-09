@@ -1,0 +1,60 @@
+body {
+    background-color: #222;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #FFD700;
+    margin-bottom: 20px;
+}
+
+.roulette-container {
+    margin: 20px auto;
+}
+
+.wheel {
+    width: 300px;
+    margin-bottom: 20px;
+}
+
+.balance {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+button {
+    background-color: #444;
+    color: #FFD700;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #666;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input, select {
+    width: 200px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+}

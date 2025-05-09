@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Lucky Logic – Roulette{% endblock %}
+
+{% block content %}
+<h1>🎡 Roulette</h1>
+
+<!-- wheel image -->
+<img id="roulette-wheel"
+     class="wheel"
+     src="{{ url_for('static', filename='img/wheel.png') }}"
+     alt="Roulette wheel">
+
+<h3>Balance: {{ balance }} coins</h3>
+
+<form method="POST">
+  <label>Bet Type:</label>
+  <select name="bet_type">
+    <option value="color">Color</option>
+    <option value="number">Number</option>
+  </select><br>
+
+  <label>Bet Value:</label>
+  <select name="bet_value">
+    <optgroup label="Colors">
+      <option value="Red">Red</option>
+      <option value="Black">Black</option>
+    </optgroup>
+    <optgroup label="Numbers">
+      {% for n in range(37) %}
+      <option value="{{ n }}">{{ n }}</option>
+      {% endfor %}
+    </optgroup>
+  </select><br>
+
+  <label>Bet Amount:</label>
+  <input type="number" name="bet_amount" min="1" max="{{ balance }}" required><br>
+
+  <button class="btn" type="submit">Spin the Wheel</button>
+</form>
+
+<a class="btn" href="{{ url_for('get_more_coins') }}">➕ Get 100&nbsp;Coins</a>
+
+<!-- simple spin animation -->
+<script>
+document.querySelector('form').addEventListener('submit', () => {
+  const wheel   = document.getElementById('roulette-wheel');
+  const spins   = 5 + Math.random() * 3;                 // 5–8 full turns
+  wheel.style.transition = 'transform 4s cubic-bezier(.2,.85,.3,1)';
+  wheel.style.transform  = 'rotate(' + (spins*360) + 'deg)';
+});
+</script>
+{% endblock %}
