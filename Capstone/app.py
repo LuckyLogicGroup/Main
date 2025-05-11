@@ -3,13 +3,15 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from Games.roulette.roulette import spin_roulette          # ← lowercase import
+from Games.coinflip.coinflip import coinflip_spin
 
 app = Flask(__name__)
 app.secret_key = "slys123"
 
 # ----------------  DATABASE  -----------------
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(basedir,'instance','database.db')}"
+instancedir = os.path.join(basedir,'instance','database.db')
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{instancedir}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -88,25 +90,58 @@ def roulette():
 
     return render_template('roulette.html', balance=session.get('balance',100))
 
+# ---------------  COINFLIP  ------------------
+@app.route('/coinflip', methods=['GET', 'POST'])
+def coinflip():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        bet_amount = int(request.form['bet_amount'])
+        if bet_amount > session['balance']:
+            return "Not enough coins!", 400
+
+        win, outcome, payout, new_balance = coinflip_spin(
+            bet_amount, session['balance'], session['username']
+        )
+        session['balance'] = new_balance
+        return redirect(url_for('coinflip'))
+
+    return render_template('coinflip.html', balance=session.get('balance', 100))
+
 # ---------------  HISTORY  -------------------
 @app.route('/history')
 def history():
     if 'username' not in session: return redirect(url_for('index'))
 
-    path  = os.path.join('Games','roulette','roulette_results.csv')
-    rows  = []
-    if os.path.exists(path):
-        with open(path) as f:
+    roulette_path = os.path.join('Games', 'roulette', 'roulette_results.csv')
+    roulette_rows = []
+    if os.path.exists(roulette_path):
+        with open(roulette_path) as f:
             rdr = csv.reader(f); next(rdr, None)
             for r in rdr:
-                if session['role']=='Admin' or r[0]==session['username']:
-                    rows.append(r)
+                if session['role'] == 'Admin' or r[0] == session['username']:
+                    roulette_rows.append(r)
 
-    card_csv = os.path.join('Games','card_game','probability_challenge_results.csv')
+    # Load Coinflip History
+    coinflip_path = os.path.join('Games', 'coinflip', 'coinflip_results.csv')
+    coinflip_rows = []
+    if os.path.exists(coinflip_path):
+        with open(coinflip_path) as f:
+            rdr = csv.reader(f); next(rdr, None)
+            for r in rdr:
+                if session['role'] == 'Admin' or r[0] == session['username']:
+                    coinflip_rows.append(r)
+
+    # Card Game link (optional)
+    card_csv = os.path.join('Games', 'card_game', 'probability_challenge_results.csv')
+
     return render_template('history.html',
-                rows=rows,
-                is_admin=(session['role']=='Admin'),
-                show_card_link=os.path.exists(card_csv))
+        roulette_rows=roulette_rows,
+        coinflip_rows=coinflip_rows,
+        is_admin=(session['role'] == 'Admin'),
+        show_card_link=os.path.exists(card_csv)
+    )
 
 # ---------------  LOGOUT ---------------------
 @app.route('/logout')
@@ -130,7 +165,13 @@ def create_default_users():
 
 @app.cli.command('initdb')
 def initdb():
-    db.create_all(); create_default_users(); print("DB initialised")
+    # Ensure instance folder exists
+    instance_path = current_app.instance_path
+    os.makedirs(instance_path, exist_ok=True)
+
+    db.create_all()
+    create_default_users()
+    print("DB initialised")
 
 # ---------------  MAIN  ----------------------
 if __name__ == "__main__":

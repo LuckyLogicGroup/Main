@@ -4,7 +4,9 @@
 {% block content %}
 <h1>📝 Game History</h1>
 
-{% if rows %}
+<!-- ROULETTE HISTORY -->
+{% if roulette_rows %}
+<h2>🎡 Roulette</h2>
 <table>
   <thead>
     <tr>
@@ -14,7 +16,7 @@
     </tr>
   </thead>
   <tbody>
-  {% for r in rows %}
+  {% for r in roulette_rows %}
     <tr>
       {% if is_admin %}<td>{{ r[0] }}</td>{% endif %}
       <td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
@@ -24,9 +26,35 @@
   </tbody>
 </table>
 {% else %}
-<p>No spins recorded yet.</p>
+<p>No roulette spins recorded yet.</p>
 {% endif %}
 
+<!-- COINFLIP HISTORY -->
+{% if coinflip_rows %}
+<h2>🪙 Coinflip</h2>
+<table>
+  <thead>
+    <tr>
+      {% if is_admin %}<th>User</th>{% endif %}
+      <th>Outcome</th><th>Bet Amount</th><th>Result</th>
+      <th>Net Gain</th><th>Balance After</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in coinflip_rows %}
+    <tr>
+      {% if is_admin %}<td>{{ r[0] }}</td>{% endif %}
+      <td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
+      <td>{{ r[4] }}</td><td>{{ r[5] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No coinflips recorded yet.</p>
+{% endif %}
+
+<!-- CARD GAME DOWNLOAD -->
 {% if show_card_link %}
   <a class="btn" href="{{ url_for('download_results') }}">📄 Download Card-Game CSV</a>
 {% endif %}
