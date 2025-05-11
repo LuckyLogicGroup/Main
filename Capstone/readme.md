@@ -1,8 +1,5 @@
 pip install -r requirements.txt
 
-flask initdb
-
-
 python app.py
  
  
