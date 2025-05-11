@@ -164,13 +164,7 @@ def create_default_users():
 
 @app.cli.command('initdb')
 def initdb():
-    # Ensure instance folder exists
-    instance_path = current_app.instance_path
-    os.makedirs(instance_path, exist_ok=True)
-
-    db.create_all()
-    create_default_users()
-    print("DB initialised")
+    db.create_all(); create_default_users(); print("DB initialised")
 
 # ---------------  MAIN  ----------------------
 if __name__ == "__main__":
