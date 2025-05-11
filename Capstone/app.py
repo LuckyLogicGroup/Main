@@ -161,11 +161,7 @@ def create_default_users():
             db.session.add(User(username=u,
                                 password=generate_password_hash(p), role=r))
     db.session.commit()
-
-@app.cli.command('initdb')
-def initdb():
-    db.create_all(); create_default_users(); print("DB initialised")
-
+    
 # ---------------  MAIN  ----------------------
 if __name__ == "__main__":
     os.makedirs('instance', exist_ok=True)
