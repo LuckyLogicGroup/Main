@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Lucky Logic – Coinflip{% endblock %}
+
+{% block content %}
+<h1>🪙 Coinflip</h1>
+
+<!-- coin image -->
+<img id="coin" class="wheel"
+     src="{{ url_for('static', filename='img/coin.png') }}"
+     alt="Coin">
+
+<h3>Balance: {{ balance }} coins</h3>
+
+<form method="POST">
+  <label>Bet Amount:</label>
+  <input type="number" name="bet_amount" min="1" max="{{ balance }}" required><br>
+
+  <button class="btn" type="submit">Flip the Coin</button>
+</form>
+
+<a class="btn" href="{{ url_for('get_more_coins') }}">➕ Get 100&nbsp;Coins</a>
+
+<!-- coin flip animation -->
+<script>
+document.querySelector('form').addEventListener('submit', () => {
+  const coin = document.getElementById('coin');
+  const flips = 4 + Math.random() * 4; // 4–8 full flips
+  coin.style.transition = 'transform 2s ease-in-out';
+  coin.style.transform  = 'rotateX(' + (flips * 360) + 'deg)';
+});
+</script>
+{% endblock %}
