@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from Games.roulette.roulette import spin_roulette          # ← lowercase import
 from Games.coinflip.coinflip import coinflip_spin
+from Games.dice.dice import dice_roll
 
 app = Flask(__name__)
 app.secret_key = "slys123"
@@ -125,11 +126,32 @@ def coinflip():
 
     return render_template('coinflip.html', balance=session.get('balance', 100))
 
+# ---------------  DICE  ------------------
+@app.route('/dice', methods=['GET', 'POST'])
+def dice():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        bet_amount = int(request.form['bet_amount'])
+        guess = request.form['guess']
+        if bet_amount > session['balance']:
+            return "Not enough coins!", 400
+
+        win, roll, result, payout, new_balance = dice_roll(
+            bet_amount, session['balance'], guess, session['username']
+        )
+        session['balance'] = new_balance
+        return redirect(url_for('dice'))
+
+    return render_template('dice.html', balance=session.get('balance', 100))
+
 # ---------------  HISTORY  -------------------
 @app.route('/history')
 def history():
     if 'username' not in session: return redirect(url_for('index'))
 
+    # Load Roulette History
     roulette_path = os.path.join('Games', 'roulette', 'roulette_results.csv')
     roulette_rows = []
     if os.path.exists(roulette_path):
@@ -152,9 +174,20 @@ def history():
     # Card Game link (optional)
     card_csv = os.path.join('Games', 'card_game', 'probability_challenge_results.csv')
 
+    # Load Dice History
+    dice_path = os.path.join('Games', 'dice', 'dice_results.csv')
+    dice_rows = []
+    if os.path.exists(dice_path):
+        with open(dice_path) as f:
+            rdr = csv.reader(f); next(rdr, None)
+            for r in rdr:
+                if session['role'] == 'Admin' or r[0] == session['username']:
+                    dice_rows.append(r)
+
     return render_template('history.html',
         roulette_rows=roulette_rows,
         coinflip_rows=coinflip_rows,
+        dice_rows=dice_rows,
         is_admin=(session['role'] == 'Admin'),
         show_card_link=os.path.exists(card_csv)
     )
