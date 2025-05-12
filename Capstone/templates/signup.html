@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ role }} Signup • Lucky Logic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    h1{ text-align:center; margin-bottom:25px; }
+    .logo{ width:450px; max-width:90%; margin:40px auto 20px; display:block; animation:pulse 4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    .signup-box{ background:#444; width:340px; margin:20px auto 60px; padding:28px 24px; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,.4); }
+    .signup-box input, .signup-box button{ width:92%; padding:11px 10px; margin:10px 0; border:none; border-radius:6px; font-size:15px; }
+    .signup-box button{ background:#11a018; color:#fff; font-size:17px; cursor:pointer; transition:background .25s; }
+    .signup-box button:hover{ background:#0c7f12; }
+  </style>
+</head>
+<body>
+
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="Lucky Logic Logo" class="logo">
+  <h1>User Signup</h1>
+
+  <div class="signup-box">
+    <form action="{{ url_for('register', role=role) }}" method="POST">
+      <input  type="text"     name="username" placeholder="Choose a Username" required>
+      <input  type="password" name="password" placeholder="Choose a Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p style="text-align:center; margin-top:10px;">
+      Already have an account? <a href="{{ url_for('login', role=role) }}" style="color:#11a018;">Log in</a>
+    </p>
+  </div>
+
+</body>
+</html>

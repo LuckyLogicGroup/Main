@@ -38,6 +38,23 @@ def auth(role):
         return redirect(url_for('homepage'))
     return "Invalid credentials", 401
 
+@app.route('/signup')
+def signup():
+    return render_template('signup.html', role='user')
+
+@app.route('/register/<role>', methods=['POST'])
+def register(role):
+    u = request.form['username']
+    p = request.form['password']
+    existing_user = User.query.filter_by(username=u).first()
+    if existing_user:
+        return "Username already taken", 400
+    new_user = User(username=u, password=generate_password_hash(p), role=role.capitalize())
+    db.session.add(new_user)
+    db.session.commit()
+    session.update(username=u, role=role.capitalize(), balance=100)
+    return redirect(url_for('homepage'))
+
 # ----------------  PAGES  --------------------
 @app.route('/homepage')
 def homepage():
