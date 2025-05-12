@@ -202,62 +202,31 @@ def rps():
 # ---------------  HISTORY  -------------------
 @app.route('/history')
 def history():
-    if 'username' not in session: return redirect(url_for('index'))
+    if 'username' not in session:
+        return redirect(url_for('index'))
 
-    # Load Roulette History
-    roulette_path = os.path.join('Games', 'roulette', 'roulette_results.csv')
-    roulette_rows = []
-    if os.path.exists(roulette_path):
-        with open(roulette_path) as f:
-            rdr = csv.reader(f); next(rdr, None)
-            for r in rdr:
-                if session['role'] == 'Admin' or r[0] == session['username']:
-                    roulette_rows.append(r)
+    def load_csv_rows(file_path, username):
+        rows = []
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                rdr = csv.reader(f)
+                next(rdr, None)  # Skip header
+                for row in rdr:
+                    if session['role'] == 'Admin' or row[0] == username:
+                        rows.append(row)
+        return rows
 
-    # Load Coinflip History
-    coinflip_path = os.path.join('Games', 'coinflip', 'coinflip_results.csv')
-    coinflip_rows = []
-    if os.path.exists(coinflip_path):
-        with open(coinflip_path) as f:
-            rdr = csv.reader(f); next(rdr, None)
-            for r in rdr:
-                if session['role'] == 'Admin' or r[0] == session['username']:
-                    coinflip_rows.append(r)
+    base_path = 'Games'
+    username = session['username']
 
-    # Card Game link (optional)
-    card_csv = os.path.join('Games', 'card_game', 'probability_challenge_results.csv')
+    roulette_rows = load_csv_rows(os.path.join(base_path, 'roulette', 'roulette_results.csv'), username)
+    coinflip_rows = load_csv_rows(os.path.join(base_path, 'coinflip', 'coinflip_results.csv'), username)
+    dice_rows = load_csv_rows(os.path.join(base_path, 'dice', 'dice_results.csv'), username)
+    slots_rows = load_csv_rows(os.path.join(base_path, 'slots', 'slots_results.csv'), username)
+    rps_rows = load_csv_rows(os.path.join(base_path, 'rps', 'rps_results.csv'), username)
 
-    # Load Dice History
-    dice_path = os.path.join('Games', 'dice', 'dice_results.csv')
-    dice_rows = []
-    if os.path.exists(dice_path):
-        with open(dice_path) as f:
-            rdr = csv.reader(f); next(rdr, None)
-            for r in rdr:
-                if session['role'] == 'Admin' or r[0] == session['username']:
-                    dice_rows.append(r)
-
-    # Load Slots History
-    slots_path = os.path.join('Games', 'slots', 'slots_results.csv')
-    slots_rows = []
-    if os.path.exists(slots_path):
-        with open(slots_path, 'r', encoding='utf-8') as f:
-            rdr = csv.reader(f)
-            next(rdr, None)
-            for r in rdr:
-                if session['role'] == 'Admin' or r[0] == session['username']:
-                    slots_rows.append(r)
-
-    # Load RPS History
-    rps_path = os.path.join('Games', 'rps', 'rps_results.csv')
-    rps_rows = []
-    if os.path.exists(rps_path):
-        with open(rps_path, 'r', encoding='utf-8') as f:
-            rdr = csv.reader(f)
-            next(rdr, None)  # Skip header row
-            for r in rdr:
-                if session['role'] == 'Admin' or r[0] == session['username']:
-                    rps_rows.append(r)
+    card_csv = os.path.join(base_path, 'card_game', 'probability_challenge_results.csv')
+    show_card_link = os.path.exists(card_csv)
 
     return render_template('history.html',
         roulette_rows=roulette_rows,
@@ -266,7 +235,7 @@ def history():
         slots_rows=slots_rows,
         rps_rows=rps_rows,
         is_admin=(session['role'] == 'Admin'),
-        show_card_link=os.path.exists(card_csv)
+        show_card_link=show_card_link
     )
 
 # ---------------  LOGOUT ---------------------
