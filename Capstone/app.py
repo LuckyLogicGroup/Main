@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from Games.roulette.roulette import spin_roulette          # ← lowercase import
 from Games.coinflip.coinflip import coinflip_spin
 from Games.dice.dice import dice_roll
+from Games.slots.slots import slots_spin
 
 app = Flask(__name__)
 app.secret_key = "slys123"
@@ -146,6 +147,30 @@ def dice():
 
     return render_template('dice.html', balance=session.get('balance', 100))
 
+# ---------------  SLOTS  ------------------
+@app.route('/slots', methods=['GET', 'POST'])
+def slots():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
+    slots_result, result = None, None
+
+    if request.method == 'POST':
+        bet_amount = int(request.form['bet_amount'])
+        if bet_amount > session['balance']:
+            return "Not enough coins!", 400
+
+        slots_result, result, win, payout, new_balance = slots_spin(
+            bet_amount, session['balance'], session['username']
+        )
+        session['balance'] = new_balance
+
+    return render_template('slots.html',
+        balance=session.get('balance', 100),
+        slots=slots_result,
+        result=result
+    )
+
 # ---------------  HISTORY  -------------------
 @app.route('/history')
 def history():
@@ -184,10 +209,22 @@ def history():
                 if session['role'] == 'Admin' or r[0] == session['username']:
                     dice_rows.append(r)
 
+    # Load Slots History
+    slots_path = os.path.join('Games', 'slots', 'slots_results.csv')
+    slots_rows = []
+    if os.path.exists(slots_path):
+        with open(slots_path, 'r', encoding='utf-8') as f:
+            rdr = csv.reader(f)
+            next(rdr, None)
+            for r in rdr:
+                if session['role'] == 'Admin' or r[0] == session['username']:
+                    slots_rows.append(r)
+
     return render_template('history.html',
         roulette_rows=roulette_rows,
         coinflip_rows=coinflip_rows,
         dice_rows=dice_rows,
+        slots_rows=slots_rows,
         is_admin=(session['role'] == 'Admin'),
         show_card_link=os.path.exists(card_csv)
     )
