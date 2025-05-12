@@ -86,6 +86,7 @@
   <thead>
     <tr>
       {% if is_admin %}<th>User</th>{% endif %}
+      <th>Reel 1</th><th>Reel 2</th><th>Reel 3</th><th>Result</th>
       <th>Bet Amount</th><th>Net Gain</th><th>Balance After</th>
     </tr>
   </thead>
@@ -93,6 +94,7 @@
   {% for r in slots_rows %}
     <tr>
       {% if is_admin %}<td>{{ r[0] }}</td>{% endif %}
+      <td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td><td>{{ r[4] }}</td>
       <td>{{ r[5] }}</td><td>{{ r[6] }}</td><td>{{ r[7] }}</td>
     </tr>
   {% endfor %}
@@ -100,6 +102,31 @@
 </table>
 {% else %}
 <p>No slot spins recorded yet.</p>
+{% endif %}
+
+<!-- RPS HISTORY -->
+{% if rps_rows %}
+<h2>✊📄✂️ Rock Paper Scissors</h2>
+<table>
+  <thead>
+    <tr>
+      {% if is_admin %}<th>User</th>{% endif %}
+      <th>User Choice</th><th>Computer Choice</th><th>Result</th>
+      <th>Net Gain</th><th>Balance After</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in rps_rows %}
+    <tr>
+      {% if is_admin %}<td>{{ r[0] }}</td>{% endif %}
+      <td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
+      <td>{{ r[4] }}</td><td>{{ r[5] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No Rock Paper Scissors games recorded yet.</p>
 {% endif %}
 
 <!-- CARD GAME DOWNLOAD -->
