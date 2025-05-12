@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Lucky Logic – Slots{% endblock %}
+
+{% block content %}
+<h1>🎰 Slot Machine</h1>
+
+<h3>Balance: {{ balance }} coins</h3>
+
+<form method="POST">
+  <label>Bet Amount:</label>
+  <input type="number" name="bet_amount" min="1" max="{{ balance }}" required><br>
+  <button class="btn" type="submit">Spin!</button>
+</form>
+
+<a class="btn" href="{{ url_for('get_more_coins') }}">➕ Get 100&nbsp;Coins</a>
+
+{% if slots %}
+  <h2 style="font-size: 2.5rem;">{{ slots[0] }} {{ slots[1] }} {{ slots[2] }}</h2>
+  <p><strong>{{ result }}</strong></p>
+{% endif %}
+{% endblock %}
