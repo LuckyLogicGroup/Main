@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Lucky Logic – Dice Roll{% endblock %}
+
+{% block content %}
+<h1>🎲 Dice Roll – High or Low?</h1>
+
+<h3>Balance: {{ balance }} coins</h3>
+
+<form method="POST">
+  <label>Bet Amount:</label>
+  <input type="number" name="bet_amount" min="1" max="{{ balance }}" required><br>
+
+  <label>Pick:</label>
+  <select name="guess" required>
+    <option value="High">High (4–6)</option>
+    <option value="Low">Low (1–3)</option>
+  </select><br>
+
+  <button class="btn" type="submit">Roll the Dice</button>
+</form>
+
+<a class="btn" href="{{ url_for('get_more_coins') }}">➕ Get 100&nbsp;Coins</a>
+{% endblock %}
