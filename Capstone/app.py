@@ -213,8 +213,9 @@ def history():
     slots_path = os.path.join('Games', 'slots', 'slots_results.csv')
     slots_rows = []
     if os.path.exists(slots_path):
-        with open(slots_path) as f:
-            rdr = csv.reader(f); next(rdr, None)
+        with open(slots_path, 'r', encoding='utf-8') as f:
+            rdr = csv.reader(f)
+            next(rdr, None)
             for r in rdr:
                 if session['role'] == 'Admin' or r[0] == session['username']:
                     slots_rows.append(r)
