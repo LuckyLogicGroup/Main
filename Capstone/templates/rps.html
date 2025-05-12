@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Lucky Logic – Rock Paper Scissors{% endblock %}
+
+{% block content %}
+<h1>✊✋✌️ Rock Paper Scissors</h1>
+
+<h3>Balance: {{ balance }} coins</h3>
+
+<form method="POST">
+  <label for="choice">Choose your move:</label><br>
+  <div style="font-size: 2rem;">
+    <label>
+      <input type="radio" name="choice" value="🪨" required> 🪨 Rock
+    </label><br>
+    <label>
+      <input type="radio" name="choice" value="📄"> 📄 Paper
+    </label><br>
+    <label>
+      <input type="radio" name="choice" value="✂️"> ✂️ Scissors
+    </label>
+  </div>
+
+  <label>Bet Amount:</label>
+  <input type="number" name="bet_amount" min="1" max="{{ balance }}" required><br>
+
+  <button class="btn" type="submit">Play!</button>
+</form>
+
+{% if result %}
+  <hr>
+  <h2>🆚 Result</h2>
+  <p><strong>You:</strong> {{ user_choice }} vs <strong>Computer:</strong> {{ computer_choice }}</p>
+  <p><strong>Outcome:</strong> {{ result }}</p>
+  <p><strong>Net Gain:</strong> {{ net_gain }} coins</p>
+{% endif %}
+
+<a class="btn" href="{{ url_for('get_more_coins') }}">➕ Get 100&nbsp;Coins</a>
+{% endblock %}

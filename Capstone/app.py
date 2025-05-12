@@ -6,6 +6,7 @@ from Games.roulette.roulette import spin_roulette          # ← lowercase impor
 from Games.coinflip.coinflip import coinflip_spin
 from Games.dice.dice import dice_roll
 from Games.slots.slots import slots_spin
+from Games.rps.rps import determine_winner
 
 app = Flask(__name__)
 app.secret_key = "slys123"
@@ -171,6 +172,33 @@ def slots():
         result=result
     )
 
+# ---------------  ROCK, PAPER, SCISSORS  ------------------
+@app.route('/rps', methods=['GET', 'POST'])
+def rps():
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        bet_amount = int(request.form['bet_amount'])
+        if bet_amount > session['balance']:
+            return "Not enough coins!", 400
+
+        user_choice = request.form['choice']
+
+        result, computer_choice, net_gain, new_balance = determine_winner(
+            user_choice, bet_amount, session['balance'], session['username']
+        )
+        session['balance'] = new_balance
+
+        return render_template('rps.html',
+                               user_choice=user_choice,
+                               computer_choice=computer_choice,
+                               result=result,
+                               net_gain=net_gain,
+                               balance=new_balance)
+
+    return render_template('rps.html', balance=session.get('balance', 100))
+
 # ---------------  HISTORY  -------------------
 @app.route('/history')
 def history():
@@ -220,11 +248,23 @@ def history():
                 if session['role'] == 'Admin' or r[0] == session['username']:
                     slots_rows.append(r)
 
+    # Load RPS History
+    rps_path = os.path.join('Games', 'rps', 'rps_results.csv')
+    rps_rows = []
+    if os.path.exists(rps_path):
+        with open(rps_path, 'r', encoding='utf-8') as f:
+            rdr = csv.reader(f)
+            next(rdr, None)  # Skip header row
+            for r in rdr:
+                if session['role'] == 'Admin' or r[0] == session['username']:
+                    rps_rows.append(r)
+
     return render_template('history.html',
         roulette_rows=roulette_rows,
         coinflip_rows=coinflip_rows,
         dice_rows=dice_rows,
         slots_rows=slots_rows,
+        rps_rows=rps_rows,
         is_admin=(session['role'] == 'Admin'),
         show_card_link=os.path.exists(card_csv)
     )
